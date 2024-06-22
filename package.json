@@ -1,8 +1,22 @@
 {
   "name": "utilytieslibrary",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/utilytieslibrary.umd.cjs",
+  "types": "./dist/src/types/index.d.ts",
+  "exports" : {
+    ".": {
+      "import": "./dist/utilytieslibrary.js",
+      "export": "./dist/utilytieslibrary.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc && vite build",
     "check:types": "tsc --noEmit",
