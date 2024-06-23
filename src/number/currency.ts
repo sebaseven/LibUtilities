@@ -3,6 +3,7 @@
  *
  * @return { string }
  */
+import { isNumber } from './isNumber';
 export const formatCurrency = (
   num: number = 0,
   decimals: number = 2,
@@ -20,24 +21,29 @@ export const formatCurrency = (
   if (withSign) formatted = '$' + formatted;
   return formatted;
 };
-
 export const formatCurrencyIntDecimals = (
   num: number = 0,
   decimals: number = 2,
   withSign: boolean = true,
   showZeros: boolean = true
 ): string => {
-  if (!isNumber(num)) return '0';
-  const parseNumber = parseFloat(num.toString());
+  if (!isFinite(num)) return '0';
+
+  const absoluteNum = Math.abs(num); // Tomamos el valor absoluto del número para formatearlo
   const numDecimals = decimals;
-  const formatWithFixedPoint = parseNumber
-    .toFixed(num % 1 == 0 && !showZeros ? 0 : numDecimals)
+  const formatWithFixedPoint = absoluteNum
+    .toFixed(num % 1 === 0 && !showZeros ? 0 : numDecimals)
     .replace('.', ',');
+
   let formatted = formatWithFixedPoint
     .toString()
-    .replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.');
-  if (withSign) formatted = '$' + formatted;
-  return formatted;
+    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+
+  if (withSign) {
+    formatted = formatted.includes('-') ? '-$' + formatted.replace('-', '') : '$' + formatted;
+  }
+
+  return num < 0 ? '-' + formatted : formatted;
 };
 
 export const splitAmountToInput = (value: string): { numbers: string; decimals: string } => {
@@ -119,9 +125,3 @@ export const formatAmountRow = (value: number): string => {
 export const amountWithoutSign = (amount: number): string =>
   String(amount).replace(/^(-|\+)/, '');
 
-/**
- * Helper function to check if a value is a number
- */
-function isNumber(value: any): boolean {
-  return typeof value === 'number' && !isNaN(value);
-}
